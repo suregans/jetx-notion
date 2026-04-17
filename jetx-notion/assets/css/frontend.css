@@ -1,0 +1,428 @@
+/**
+ * assets/css/frontend.css
+ *
+ * Static structural styles for the JetX AI Hub frontend.
+ * All colour values reference CSS custom properties defined by jetx_hub_theme_css_vars()
+ * in includes/property-defs.php, which outputs a scoped block on the .jetx-hub-wrap selector.
+ *
+ * No theme-specific hex values should appear here — use var(--jhub-*) only.
+ */
+
+/* ── Reset + wrapper ─────────────────────────────────────────────────────── */
+.jetx-hub-wrap {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--jhub-bg);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+    color: var(--jhub-text);
+    box-sizing: border-box;
+}
+
+.jetx-hub-wrap * {
+    box-sizing: border-box;
+}
+
+/* ── Controls bar ────────────────────────────────────────────────────────── */
+.jhub-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.jhub-search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+}
+
+.jhub-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--jhub-text3);
+    pointer-events: none;
+}
+
+.jhub-search {
+    width: 100%;
+    padding: 9px 14px 9px 36px;
+    background: var(--jhub-inp-bg);
+    border: 1px solid var(--jhub-border2);
+    border-radius: 8px;
+    color: var(--jhub-text);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.jhub-search:focus {
+    border-color: var(--jhub-link);
+}
+
+.jhub-search::placeholder {
+    color: var(--jhub-text3);
+}
+
+.jhub-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.jhub-select {
+    padding: 8px 12px;
+    background: var(--jhub-inp-bg);
+    border: 1px solid var(--jhub-border2);
+    border-radius: 8px;
+    color: var(--jhub-text);
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.jhub-select:focus {
+    border-color: var(--jhub-link);
+}
+
+.jhub-count {
+    font-size: 11px;
+    color: var(--jhub-text3);
+    white-space: nowrap;
+}
+
+/* ── Badge ───────────────────────────────────────────────────────────────── */
+.jhub-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 2px 2px 2px 0;
+    white-space: nowrap;
+    background: var(--jhub-bg2);
+    color: var(--jhub-text2);
+}
+
+/* ── TABLE layout ────────────────────────────────────────────────────────── */
+.jhub-table-wrap {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--jhub-border);
+}
+
+.jhub-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 580px;
+}
+
+.jhub-table thead th {
+    background: var(--jhub-bg2);
+    color: var(--jhub-text3);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 11px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--jhub-border2);
+    white-space: nowrap;
+}
+
+.jhub-table tbody tr {
+    border-bottom: 1px solid var(--jhub-border);
+    transition: background 0.12s;
+}
+
+.jhub-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.jhub-table tbody tr:hover {
+    background: var(--jhub-row-h);
+}
+
+.jhub-table td {
+    padding: 12px 14px;
+    vertical-align: top;
+    color: var(--jhub-text2);
+}
+
+/* ── Name cell (shared across layouts) ───────────────────────────────────── */
+.jhub-td-name,
+.jhub-list-main {
+    min-width: 180px;
+    max-width: 320px;
+}
+
+.jhub-name a {
+    color: var(--jhub-link);
+    font-weight: 600;
+    font-size: 13.5px;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.jhub-name a:hover {
+    color: var(--jhub-link-h);
+}
+
+.jhub-name span {
+    color: var(--jhub-text);
+    font-weight: 600;
+    font-size: 13.5px;
+}
+
+.jhub-ext {
+    font-size: 10px;
+    opacity: 0.5;
+}
+
+.jhub-pub {
+    font-size: 11px;
+    color: var(--jhub-text3);
+    margin-top: 2px;
+}
+
+.jhub-sum {
+    font-size: 11.5px;
+    color: var(--jhub-text3);
+    margin-top: 5px;
+    line-height: 1.5;
+}
+
+.jhub-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.jhub-gh {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 5px;
+    font-size: 11px;
+    color: var(--jhub-text3);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.jhub-gh:hover {
+    color: var(--jhub-text2);
+}
+
+/* ── GALLERY layout ──────────────────────────────────────────────────────── */
+.jhub-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.jhub-card {
+    background: var(--jhub-bg2);
+    border: 1px solid var(--jhub-border2);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: border-color 0.15s;
+}
+
+.jhub-card:hover {
+    border-color: var(--jhub-link);
+}
+
+.jhub-card-head {
+    margin-bottom: 4px;
+}
+
+.jhub-card-foot {
+    margin-top: 4px;
+    padding-top: 8px;
+    border-top: 1px solid var(--jhub-border);
+}
+
+/* ── LIST layout ─────────────────────────────────────────────────────────── */
+.jhub-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border: 1px solid var(--jhub-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.jhub-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--jhub-bg);
+    border-bottom: 1px solid var(--jhub-border);
+    transition: background 0.12s;
+}
+
+.jhub-list-item:last-child {
+    border-bottom: none;
+}
+
+.jhub-list-item:hover {
+    background: var(--jhub-row-h);
+}
+
+.jhub-list-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: flex-start;
+    min-width: 160px;
+    justify-content: flex-end;
+}
+
+/* ── BOARD layout ────────────────────────────────────────────────────────── */
+.jhub-board {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    align-items: flex-start;
+}
+
+.jhub-board-col {
+    flex: 0 0 240px;
+    background: var(--jhub-bg2);
+    border: 1px solid var(--jhub-border2);
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.jhub-board-head {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--jhub-border2);
+    font-weight: 600;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.jhub-board-count {
+    color: var(--jhub-text3);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.jhub-board-card {
+    background: var(--jhub-bg);
+    border: 1px solid var(--jhub-border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    transition: border-color 0.15s;
+}
+
+.jhub-board-card:hover {
+    border-color: var(--jhub-link);
+}
+
+.jhub-board-card-meta {
+    margin-top: 8px;
+}
+
+/* ── Hidden rows (filtered out by frontend.js) ───────────────────────────── */
+.jhub-table    tbody tr.jhub-hidden,
+.jhub-gallery  .jhub-hidden,
+.jhub-list     .jhub-hidden,
+.jhub-board-card.jhub-hidden {
+    display: none;
+}
+
+/* ── No results + reset ──────────────────────────────────────────────────── */
+.jhub-no-results {
+    text-align: center;
+    padding: 32px;
+    color: var(--jhub-text3);
+    font-size: 13px;
+}
+
+.jhub-reset-btn {
+    background: none;
+    border: 1px solid var(--jhub-border2);
+    color: var(--jhub-link);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 8px;
+    transition: all 0.15s;
+}
+
+.jhub-reset-btn:hover {
+    background: var(--jhub-bg2);
+    color: var(--jhub-link-h);
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.jhub-footer {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--jhub-border2);
+}
+
+.jhub-footer a {
+    color: var(--jhub-link);
+    text-decoration: none;
+}
+
+.jhub-footer a:hover {
+    color: var(--jhub-link-h);
+}
+
+.jhub-era {
+    font-size: 12px;
+    color: var(--jhub-text3);
+    white-space: nowrap;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .jetx-hub-wrap {
+        padding: 16px;
+    }
+
+    /* Hide lower-priority columns on tablet */
+    .jhub-table .jhub-col-traction,
+    .jhub-table .jhub-td-traction,
+    .jhub-table .jhub-col-platform,
+    .jhub-table .jhub-td-platform,
+    .jhub-table .jhub-col-era,
+    .jhub-table .jhub-td-era {
+        display: none;
+    }
+}
+
+@media (max-width: 500px) {
+    /* Hide pricing column on mobile */
+    .jhub-table .jhub-col-pricing,
+    .jhub-table .jhub-td-pricing {
+        display: none;
+    }
+
+    .jhub-gallery {
+        grid-template-columns: 1fr;
+    }
+}
