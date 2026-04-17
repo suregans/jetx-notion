@@ -1,0 +1,131 @@
+/**
+ * assets/css/admin.css
+ *
+ * Styles for the JetX AI Hub WP Admin settings page.
+ * Loaded only on settings_page_jetx-ai-hub via admin_enqueue_scripts.
+ */
+
+/* ── Page wrapper ────────────────────────────────────────────────────────── */
+.jhub-admin-wrap h1 {
+    margin-bottom: 16px;
+}
+
+.jhub-tab-nav {
+    margin-bottom: 20px;
+}
+
+.jhub-tab-intro {
+    color: #555;
+    max-width: 720px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.jhub-hr {
+    max-width: 820px;
+    margin: 28px 0;
+}
+
+/* ── Status cards (Connection tab) ──────────────────────────────────────── */
+.jhub-status-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    max-width: 820px;
+}
+
+.jhub-status-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 12px 18px;
+    flex: 1;
+    min-width: 140px;
+}
+
+.jhub-status-label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.jhub-status-value {
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* ── Setup notice ────────────────────────────────────────────────────────── */
+.jhub-setup-notice {
+    background: #fff3cd;
+    border-left: 4px solid #f0ad4e;
+    padding: 14px 18px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    max-width: 820px;
+    line-height: 1.7;
+}
+
+.jhub-setup-notice ol {
+    margin: 8px 0 0 18px;
+}
+
+/* ── Forms ───────────────────────────────────────────────────────────────── */
+.jhub-form {
+    max-width: 820px;
+}
+
+.jhub-action-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.jhub-table-actions {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* ── Column manager (Columns tab) ────────────────────────────────────────── */
+.jhub-drag-handle {
+    color: #aaa;
+    font-size: 18px;
+    cursor: grab;
+    user-select: none;
+}
+
+.jhub-drag-handle:active {
+    cursor: grabbing;
+}
+
+#jhub-col-table tbody tr {
+    cursor: move;
+}
+
+#jhub-col-table tbody tr.ui-sortable-helper {
+    background: #f0f6fc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* ── Notion color preview (Display tab) ──────────────────────────────────── */
+.jhub-color-preview-box {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    max-width: 720px;
+}
+
+.jhub-color-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+}
