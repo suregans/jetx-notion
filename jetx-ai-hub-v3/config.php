@@ -1,15 +1,20 @@
 <?php
 /**
- * config.php — All plugin defaults and white-label targets.
+ * config.php — Plugin infrastructure constants.
  *
- * ╔══════════════════════════════════════════════════════════════════╗
- * ║  WHITE-LABEL GUIDE                                               ║
- * ║  To reskin this plugin for a different brand or database:        ║
- * ║  1. Change JETX_HUB_BRANDING_* constants below                  ║
- * ║  2. Clear JETX_HUB_DEFAULT_DB_ID (each install enters their own) ║
- * ║  3. Update property-defs.php to match the target Notion schema   ║
- * ║  4. Search/replace the text-domain 'jetx-ai-hub' if needed       ║
- * ╚══════════════════════════════════════════════════════════════════╝
+ * Branding (name, URL, admin title, menu label) has moved to WP Admin →
+ * Settings → JetX AI Hub → ⚙️ Settings tab. config.php now contains only
+ * infrastructure constants that never change at runtime.
+ *
+ * WHITE-LABEL GUIDE (v4.0)
+ * ─────────────────────────
+ * 1. Install the plugin on the client's WordPress site.
+ * 2. Go to Settings → JetX AI Hub → ⚙️ Settings and enter the client's
+ *    branding name, URL, and preferred admin labels.
+ * 3. Go to 🔌 Connection and enter the client's Notion API token + DB ID.
+ * 4. Go to 🔍 Fields, click "Detect Fields from Notion", then toggle on/off
+ *    the columns to display.
+ * No PHP editing required.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,25 +25,59 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'JETX_HUB_API_BASE', 'https://api.notion.com/v1/' );
 define( 'JETX_HUB_API_VER',  '2022-06-28' );
 
-// ── Database default ─────────────────────────────────────────────────────────
-// WHITE-LABEL: Set to '' so every install enters its own DB ID in WP Admin.
-// JetX-specific value kept here as the fallback for this deployment only.
-define( 'JETX_HUB_DEFAULT_DB_ID', 'eee2fe8a-fb05-4c59-954c-8fdb4d29c85d' );
-
-// ── Branding ─────────────────────────────────────────────────────────────────
-// WHITE-LABEL: Replace these with the reseller's name, URL, and desired plugin title.
-define( 'JETX_HUB_BRANDING_NAME',  'JetX Media' );
-define( 'JETX_HUB_BRANDING_URL',   'https://www.jetxmedia.com' );
-define( 'JETX_HUB_ADMIN_TITLE',    '🤖 JetX AI Intelligence Hub' ); // WP Admin page heading.
-define( 'JETX_HUB_MENU_LABEL',     'JetX AI Hub' );                  // Settings menu label.
-
 // ── Cache / performance ──────────────────────────────────────────────────────
 define( 'JETX_HUB_CACHE_KEY',  'jetx_ai_hub_data' );
 define( 'JETX_HUB_STALE_KEY',  'jetx_ai_hub_stale' );
 define( 'JETX_HUB_LOCK_KEY',   'jetx_ai_hub_lock' );
 define( 'JETX_HUB_CRON_HOOK',  'jetx_hub_cron_refresh' );
-define( 'JETX_HUB_MAX_PAGES',  20 );         // Max Notion API pages fetched per request (100 rows/page).
-define( 'JETX_HUB_DEFAULT_CACHE_MINS', 60 ); // Default auto-refresh interval (minutes).
 
-// ── Helper: derive the Notion database URL from the saved DB ID ──────────────
-// This replaces the old hardcoded JETX_HUB_N
+// ── Fallback defaults (used only before WP Admin settings are saved) ─────────
+define( 'JETX_HUB_DEFAULT_CACHE_MINS', 60 ); // Minutes between auto-refreshes.
+define( 'JETX_HUB_DEFAULT_MAX_PAGES',  20 ); // Max Notion API pages (100 rows each).
+
+// ── Branding fallback defaults ───────────────────────────────────────────────
+// These are used if the Settings tab has never been saved.
+// Override these by saving the ⚙️ Settings tab in WP Admin.
+define( 'JETX_HUB_DEFAULT_BRANDING_NAME',  'JetX Media' );
+define( 'JETX_HUB_DEFAULT_BRANDING_URL',   'https://www.jetxmedia.com' );
+define( 'JETX_HUB_DEFAULT_ADMIN_TITLE',    '🤖 JetX AI Intelligence Hub' );
+define( 'JETX_HUB_DEFAULT_MENU_LABEL',     'JetX AI Hub' );
+
+// ── Helper: read a branding/settings value from wp_options (with fallback) ───
+/**
+ * Get a plugin setting with fallback to config.php constants.
+ *
+ * @param  string $key      Setting key: branding_name|branding_url|admin_title|menu_label|max_pages
+ * @param  string $fallback Default value if not set.
+ * @return string
+ */
+function jetx_hub_setting( string $key, string $fallback = '' ): string {
+	static $settings = null;
+	if ( $settings === null ) {
+		$settings = get_option( 'jetx_hub_settings', [] );
+	}
+
+	if ( isset( $settings[ $key ] ) && $settings[ $key ] !== '' ) {
+		return (string) $settings[ $key ];
+	}
+
+	// Fall back to compile-time constants.
+	$const_map = [
+		'branding_name' => JETX_HUB_DEFAULT_BRANDING_NAME,
+		'branding_url'  => JETX_HUB_DEFAULT_BRANDING_URL,
+		'admin_title'   => JETX_HUB_DEFAULT_ADMIN_TITLE,
+		'menu_label'    => JETX_HUB_DEFAULT_MENU_LABEL,
+		'max_pages'     => (string) JETX_HUB_DEFAULT_MAX_PAGES,
+	];
+
+	return $const_map[ $key ] ?? $fallback;
+}
+
+// ── Helper: derive the Notion database URL from the saved DB ID ───────────────
+function jetx_hub_notion_url(): string {
+	$db_id = get_option( 'jetx_hub_db_id', '' );
+	if ( empty( $db_id ) ) {
+		return 'https://www.notion.so';
+	}
+	return 'https://www.notion.so/' . str_replace( '-', '', $db_id );
+}

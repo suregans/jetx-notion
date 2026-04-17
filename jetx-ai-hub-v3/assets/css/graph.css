@@ -1,0 +1,141 @@
+/**
+ * assets/css/graph.css
+ *
+ * JetX AI Hub — Graph View styles.
+ * Sigma.js renders into a canvas; these styles control the container,
+ * legend, toggle button, and tooltip.
+ */
+
+/* ── Graph container ─────────────────────────────────────────────────────── */
+.jhub-graph-wrap {
+    position: relative;
+    width: 100%;
+    background: var(--jhub-bg);
+    border: 1px solid var(--jhub-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.jhub-sigma-container {
+    width: 100%;
+    height: 620px;
+    cursor: grab;
+}
+
+.jhub-sigma-container:active {
+    cursor: grabbing;
+}
+
+/* ── View toggle button ──────────────────────────────────────────────────── */
+.jhub-view-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--jhub-bg2);
+    border: 1px solid var(--jhub-border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.jhub-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    color: var(--jhub-text-dim);
+    transition: background 0.15s, color 0.15s;
+    line-height: 1;
+}
+
+.jhub-toggle-btn:hover {
+    background: var(--jhub-hover);
+    color: var(--jhub-text);
+}
+
+.jhub-toggle-btn.active {
+    background: var(--jhub-link);
+    color: #fff;
+}
+
+/* ── Legend ──────────────────────────────────────────────────────────────── */
+.jhub-graph-legend {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--jhub-bg2);
+    border: 1px solid var(--jhub-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--jhub-text-dim);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.jhub-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.jhub-legend-dot {
+    display: inline-block;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.jhub-legend-cat  { width: 18px; height: 18px; background: #60a5fa; }
+.jhub-legend-sub  { width: 12px; height: 12px; background: #93c5fd; }
+.jhub-legend-tool { width:  8px; height:  8px; background: #94a3b8; }
+
+/* ── Hint bar ────────────────────────────────────────────────────────────── */
+.jhub-graph-hint {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 6px 14px;
+    font-size: 11px;
+    color: var(--jhub-text-dim);
+    background: var(--jhub-bg2);
+    border-top: 1px solid var(--jhub-border);
+    text-align: center;
+    pointer-events: none;
+}
+
+/* ── Hidden state (toggled via JS) ──────────────────────────────────────── */
+.jhub-view-panel {
+    display: block;
+}
+
+.jhub-view-panel.jhub-hidden {
+    display: none;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media ( max-width: 600px ) {
+    .jhub-sigma-container {
+        height: 420px;
+    }
+
+    .jhub-graph-legend {
+        top: 8px;
+        right: 8px;
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .jhub-view-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+}

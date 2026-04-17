@@ -1,75 +1,101 @@
 /**
  * assets/js/frontend.js
  *
- * JetX AI Hub — Frontend search and filter interactions.
+ * JetX AI Hub — Frontend interactions: search, filter, view toggle.
  *
- * Pure static file — no PHP interpolation, no inline data.
- * Enqueued via wp_enqueue_script() in includes/shortcode.php.
- *
- * Works across all four layout types:
- *   table   — filters <tr class="jhub-row"> inside #jhub-table tbody
- *   gallery — filters <div class="jhub-row"> inside .jhub-gallery
- *   list    — filters <div class="jhub-row"> inside .jhub-list
- *   board   — filters <div class="jhub-board-card jhub-row">; hides empty columns
- *
- * Each filterable element carries data attributes written by jetx_hub_row_attrs():
- *   data-search    Lowercase concatenated blob of all searchable text fields.
- *   data-category  Category name.
- *   data-status    Status name.
- *   data-pricing   Pricing name.
- *   data-traction  Traction name.
+ * v4.0 changes:
+ *   - Filter dropdowns use dynamic data-f0..f3 attributes (set by jetx_hub_row_attrs())
+ *     instead of hardcoded data-category/status/pricing/traction.
+ *   - View toggle button switches between Table panel and Graph panel.
+ *   - jhub-hidden CSS class used for both rows and panels.
  */
 
 ( function () {
     'use strict';
 
-    var wrap   = document.getElementById( 'jetx-ai-hub' );
+    var wrap = document.getElementById( 'jetx-ai-hub' );
     if ( ! wrap ) return;
 
-    var layout  = wrap.dataset.layout || 'table';
-    var search  = document.getElementById( 'jhub-search' );
-    var selCat  = document.getElementById( 'jhub-cat' );
-    var selSt   = document.getElementById( 'jhub-status' );
-    var selPr   = document.getElementById( 'jhub-pricing' );
-    var selTr   = document.getElementById( 'jhub-traction' );
-    var countEl = document.getElementById( 'jhub-count' );
-    var noRes   = document.getElementById( 'jhub-no-results' );
-    var resetBtn= document.getElementById( 'jhub-reset' );
+    var layout   = wrap.dataset.layout || 'table';
+    var search   = document.getElementById( 'jhub-search' );
+    var countEl  = document.getElementById( 'jhub-count' );
+    var noRes    = document.getElementById( 'jhub-no-results' );
+    var resetBtn = document.getElementById( 'jhub-reset' );
 
-    /**
-     * Return all filterable row elements for the current layout.
-     *
-     * @returns {NodeList}
-     */
+    // Filter dropdowns — up to 4 (f0..f3), mapped from controls.php selects.
+    var selects  = wrap.querySelectorAll( '.jhub-filter-select' );
+    // selects[i] gets data-findex="i" set in controls.php.
+
+    // ── View toggle ───────────────────────────────────────────────────────────
+    var toggleBtns  = wrap.querySelectorAll( '.jhub-toggle-btn' );
+    var tablePanel  = document.getElementById( 'jhub-panel-table' );
+    var graphPanel  = document.getElementById( 'jhub-panel-graph' );
+
+    toggleBtns.forEach( function ( btn ) {
+        btn.addEventListener( 'click', function () {
+            var view = btn.dataset.view;
+
+            toggleBtns.forEach( function ( b ) {
+                b.classList.toggle( 'active', b.dataset.view === view );
+                b.setAttribute( 'aria-pressed', b.dataset.view === view ? 'true' : 'false' );
+            } );
+
+            if ( tablePanel ) tablePanel.classList.toggle( 'jhub-hidden', view === 'graph' );
+            if ( graphPanel ) graphPanel.classList.toggle( 'jhub-hidden', view !== 'graph' );
+
+            wrap.dataset.layout = view;
+            layout = view;
+
+            // Re-run applyFilters so count updates for the visible panel.
+            applyFilters();
+        } );
+    } );
+
+    // ── Row query ─────────────────────────────────────────────────────────────
     function getRows() {
         if ( layout === 'board' ) {
-            return document.querySelectorAll( '.jhub-board-card.jhub-row' );
+            return wrap.querySelectorAll( '.jhub-board-card.jhub-row' );
         }
-        return document.querySelectorAll( '#jhub-table .jhub-row' );
+        if ( layout === 'graph' ) {
+            // Filtering doesn't apply to the graph panel — return empty.
+            return [];
+        }
+        return wrap.querySelectorAll( '#jhub-table .jhub-row' );
     }
 
-    /**
-     * Apply current search + filter values to all rows.
-     * Adds/removes .jhub-hidden. Updates count display and no-results banner.
-     */
+    // ── Apply filters ─────────────────────────────────────────────────────────
     function applyFilters() {
-        var q   = search ? search.value.toLowerCase().trim() : '';
-        var cat = selCat ? selCat.value  : '';
-        var st  = selSt  ? selSt.value   : '';
-        var pr  = selPr  ? selPr.value   : '';
-        var tr  = selTr  ? selTr.value   : '';
+        var q = search ? search.value.toLowerCase().trim() : '';
+
+        // Collect active filter values keyed by findex.
+        var filterValues = {};
+        selects.forEach( function ( sel ) {
+            var fi = sel.dataset.findex;
+            filterValues[ fi ] = sel.value;
+        } );
 
         var rows    = getRows();
         var visible = 0;
 
         rows.forEach( function ( row ) {
-            var match =
-                ( ! q   || row.dataset.search.indexOf( q ) !== -1 ) &&
-                ( ! cat || row.dataset.category === cat ) &&
-                ( ! st  || row.dataset.status   === st  ) &&
-                ( ! pr  || row.dataset.pricing  === pr  ) &&
-                ( ! tr  || row.dataset.traction === tr  );
+            // Text search.
+            var textMatch = ! q || ( row.dataset.search || '' ).indexOf( q ) !== -1;
 
+            // Dropdown filters.
+            var filterMatch = true;
+            Object.keys( filterValues ).forEach( function ( fi ) {
+                var val = filterValues[ fi ];
+                if ( ! val ) return;
+                var rowVal = row.dataset[ 'f' + fi ] || '';
+                // Support multi-value (comma-separated from multi_select).
+                if ( rowVal.indexOf( ',' ) !== -1 ) {
+                    if ( rowVal.split( ',' ).indexOf( val ) === -1 ) filterMatch = false;
+                } else {
+                    if ( rowVal !== val ) filterMatch = false;
+                }
+            } );
+
+            var match = textMatch && filterMatch;
             row.classList.toggle( 'jhub-hidden', ! match );
             if ( match ) visible++;
         } );
@@ -79,42 +105,39 @@
         }
 
         if ( noRes ) {
-            noRes.style.display = visible === 0 ? 'block' : 'none';
+            noRes.style.display = ( rows.length > 0 && visible === 0 ) ? 'block' : 'none';
         }
 
-        // For board layout: hide columns that have no visible cards.
+        // Board: hide empty columns.
         if ( layout === 'board' ) {
-            document.querySelectorAll( '.jhub-board-col' ).forEach( function ( col ) {
-                var visibleCards = col.querySelectorAll( '.jhub-board-card:not(.jhub-hidden)' ).length;
-                col.style.display = visibleCards === 0 ? 'none' : '';
+            wrap.querySelectorAll( '.jhub-board-col' ).forEach( function ( col ) {
+                var v = col.querySelectorAll( '.jhub-board-card:not(.jhub-hidden)' ).length;
+                col.style.display = v === 0 ? 'none' : '';
             } );
         }
     }
 
-    /**
-     * Clear all filter inputs and re-apply (shows all rows).
-     */
+    // ── Clear filters ─────────────────────────────────────────────────────────
     function clearFilters() {
         if ( search ) search.value = '';
-        if ( selCat ) selCat.value = '';
-        if ( selSt  ) selSt.value  = '';
-        if ( selPr  ) selPr.value  = '';
-        if ( selTr  ) selTr.value  = '';
+        selects.forEach( function ( sel ) { sel.value = ''; } );
         applyFilters();
     }
 
-    // Attach event listeners.
-    [ search, selCat, selSt, selPr, selTr ].forEach( function ( el ) {
-        if ( ! el ) return;
-        var event = el.tagName === 'INPUT' ? 'input' : 'change';
-        el.addEventListener( event, applyFilters );
+    // ── Attach listeners ──────────────────────────────────────────────────────
+    if ( search ) {
+        search.addEventListener( 'input', applyFilters );
+    }
+
+    selects.forEach( function ( sel ) {
+        sel.addEventListener( 'change', applyFilters );
     } );
 
     if ( resetBtn ) {
         resetBtn.addEventListener( 'click', clearFilters );
     }
 
-    // Run once on load to initialise the count display.
+    // Init.
     applyFilters();
 
 } )();
