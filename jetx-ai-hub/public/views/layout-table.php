@@ -2,8 +2,7 @@
 /**
  * public/views/layout-table.php
  *
- * Table layout renderer — fully dynamic in v4.0.
- * Cell rendering is type-based; no hardcoded Notion field key strings.
+ * Table layout renderer.
  *
  * Variables in scope (from shortcode.php require):
  *   $items             array   Parsed Notion rows
@@ -41,15 +40,47 @@ $visible = array_filter( $cols_cfg, fn( $c ) => $c['visible'] );
 				$key = $col['key'];
 				$def = $props[ $key ] ?? null;
 				if ( $def && $def['internal'] && ! $show_internal ) continue;
-				$type = $def['type'] ?? 'rich_text';
-				$val  = $item[ $key ] ?? '';
 			?>
 				<td class="jhub-td-<?php echo esc_attr( $key ); ?>">
 				<?php
-				if ( $def && $def['type'] === 'title' ) {
-					echo jetx_hub_name_cell( $item, $disp, $use_notion_colors, $theme );
-				} else {
-					echo jetx_hub_render_cell( $val, $type, $use_notion_colors, $theme );
+				switch ( $key ) {
+
+					case 'name':
+						echo jetx_hub_name_cell( $item, $disp, $use_notion_colors, $theme );
+						break;
+
+					case 'platform':
+					case 'capability_tags':
+					case 'jetx_use_case':
+						foreach ( $item[ $key ] ?? [] as $v ) {
+							echo jetx_hub_badge( $v, $use_notion_colors, $theme );
+						}
+						break;
+
+					case 'summary':
+					case 'why_it_matters':
+					case 'publisher':
+						echo esc_html( mb_strimwidth( $item[ $key ] ?? '', 0, 100, '…' ) );
+						break;
+
+					case 'official_url':
+					case 'github_repo':
+						if ( ! empty( $item[ $key ] ) ) {
+							echo '<a href="' . esc_url( $item[ $key ] ) . '" '
+							   . 'target="_blank" rel="noopener">↗ Link</a>';
+						}
+						break;
+
+					default:
+						$val = $item[ $key ] ?? '';
+						if ( is_array( $val ) && isset( $val['name'] ) ) {
+							echo jetx_hub_badge( $val, $use_notion_colors, $theme );
+						} elseif ( is_array( $val ) ) {
+							echo esc_html( implode( ', ', array_column( $val, 'name' ) ) );
+						} else {
+							echo esc_html( $val );
+						}
+						break;
 				}
 				?>
 				</td>
